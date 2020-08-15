@@ -1,0 +1,30 @@
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: "192.168.50.12"
+  bindPort: 6443
+---
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+# kubernetesVersion: stable
+# dns:
+#   type: CoreDNS
+apiServer:
+  certSANs:
+  - "192.168.50.13"
+  extraArgs: 
+    apiserver-count: "2"
+    # authorization-mode: Node,RBAC
+controlPlaneEndpoint: "192.168.50.13:6443"
+etcd:
+  external:
+    endpoints:
+    - https://192.168.50.12:2379
+    - https://192.168.50.11:2379
+    caFile: /etc/etcd/ca.pem
+    certFile: /etc/etcd/kubernetes.pem
+    keyFile: /etc/etcd/kubernetes-key.pem
+networking:
+  podSubnet: 192.168.0.0/16
+  serviceSubnet: "10.96.0.0/12"
+  dnsDomain: "cluster.local"
